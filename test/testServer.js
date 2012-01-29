@@ -91,11 +91,11 @@ app.delete('/chainabletest', function(req, res)
     res.send('you have been deleted');
 });
 
-app.get('/cat.gif', function(req, res)
+app.get('/test.png', function(req, res)
 {
-	fs.readFile('cat.gif', 'binary', function(err, data)
+	fs.readFile('test.png', 'binary', function(err, data)
 	{
-		res.header('Content-Type', 'image/gif');
+		res.header('Content-Type', 'image/png');
 		res.end(data, 'binary');
 	});
 });

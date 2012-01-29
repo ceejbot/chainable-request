@@ -3,7 +3,7 @@ var
 	url       = require('url'),
 	fs = require('fs');
 
-imgurl = 'http://localhost:3009/cat.gif';
+imgurl = 'http://localhost:3009/test.png';
 function fetchImage(imgurl, callback)
 {
 	var uri = url.parse(imgurl);
