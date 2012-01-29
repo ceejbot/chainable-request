@@ -1,8 +1,6 @@
 var events      = require('events');
     querystring = require('querystring');
 
-// The output of url.parse() is perfect input for @options.
-// Defaults to http://localhost:80/ method GET.
 function chainableRequest(options)
 {
 	events.EventEmitter.call(this);
@@ -21,6 +19,7 @@ function chainableRequest(options)
 		'path': (options.path === undefined) ? '/' : options.path
 	};
 	var protocol = 'http';
+	// TODO enforce protocol as http or https
 	if (options.protocol && (options.protocol[options.protocol.length - 1] == ':'))
 		protocol = options.protocol.slice(0, -1);
 	this.protocol = require(protocol);
@@ -54,6 +53,7 @@ chainableRequest.prototype.port = function(port)
 
 chainableRequest.prototype.protocol = function(proto)
 {
+	// TODO restrict protocols to one of http, https
 	if (proto[proto.length - 1] == ':')
 		proto = proto.slice(0, -1);
 	this.protocol = require(proto);
@@ -89,6 +89,7 @@ chainableRequest.prototype.body = function(body)
 
 chainableRequest.prototype.basic_auth = function(user, password)
 {
+	// TODO test-- completely unexercised code.
 	var enc = new Buffer(user+':'+password).toString('base64');
 	this.parameters.headers.extend({ 'Authorization': 'Basic '+enc });
 	return this;
@@ -165,6 +166,7 @@ chainableRequest.prototype.execute = function()
 
 function parseMimeType(header)
 {
+	// TODO: return charset as well.
 	var pieces = header.split(';');
 	var type = pieces[0];
 	return type;
