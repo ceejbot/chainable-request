@@ -7,5 +7,6 @@
   "author"          : "C J Silverio <ceejceej@gmail.com>",
   "repository"      : { "type": "git",
                         "url" : "git://github.com/ceejbot/chainable-request.git" },
-  "bugs"            : "http://github.com/ceejbot/chainable-request/issues"
+  "bugs"            : "http://github.com/ceejbot/chainable-request/issues",
+  "devDependencies" : { "express": "2.5.x", "connect-auth": "0.4.1" }
 }
