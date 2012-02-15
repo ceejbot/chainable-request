@@ -1,3 +1,8 @@
+var chainableRequest = ((typeof module !== 'undefined') && module.exports) || {};
+
+(function(exports)
+{
+
 var events      = require('events');
     querystring = require('querystring');
 
@@ -62,13 +67,13 @@ chainableRequest.prototype.protocol = function(proto)
 
 chainableRequest.prototype.headers = function(headers)
 {
-	this.parameters.headers.extend(headers);
+	__extend(this.parameters.headers, headers);
 	return this;
 };
 
 chainableRequest.prototype.content_type = function(type)
 {
-	this.parameters.headers.extend({'Content-Type': type});
+	__extend(this.parameters.headers, {'Content-Type': type});
 	return this;
 };
 
@@ -91,7 +96,7 @@ chainableRequest.prototype.basic_auth = function(user, password)
 {
 	// TODO test-- completely unexercised code.
 	var enc = new Buffer(user+':'+password).toString('base64');
-	this.parameters.headers.extend({ 'Authorization': 'Basic '+enc });
+	__extend(this.parameters.headers, { 'Authorization': 'Basic '+enc });
 	return this;
 };
 
@@ -141,9 +146,9 @@ chainableRequest.prototype.execute = function()
 	var self = this;
 	
 	if (self.payload === undefined)
-		self.parameters.headers.extend({'Content-Length': 0});
+		__extend(this.parameters.headers, {'Content-Length': 0});
 	else
-		self.parameters.headers.extend({'Content-Length': Buffer.byteLength(self.payload)});
+		__extend(this.parameters.headers, {'Content-Length': Buffer.byteLength(self.payload)});
 	
 	var request = self.protocol.request(self.parameters, function(response)
 	{
@@ -271,12 +276,16 @@ chainableRequest.prototype.handleChunkedResponse = function(response)
 	});
 }
 
-Object.prototype.extend = function(source)
+function __extend(destination, source)
 {
 	for (var property in source)
 	{
 		if (source.hasOwnProperty(property))
-			this[property] = source[property];
+			destination[property] = source[property];
 	}
-	return this;
-};
+	return destination;
+}
+
+exports.chainableRequest = chainableRequest;
+
+})(chainableRequest);
