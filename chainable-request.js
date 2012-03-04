@@ -86,7 +86,10 @@ chainableRequest.prototype.query = function(params)
 chainableRequest.prototype.body = function(body)
 {
 	if (typeof body == 'object')
+	{
 		this.payload = querystring.stringify(body);
+		this.content_type('application/x-www-form-urlencoded');
+	}
 	else
 		this.payload = body;
 	return this;
@@ -171,30 +174,34 @@ chainableRequest.prototype.execute = function()
 
 function parseMimeType(header)
 {
-	// TODO: return charset as well.
+	var result = {};
 	var pieces = header.split(';');
-	var type = pieces[0];
-	return type;
+	result.mimetype = pieces[0].trim();
+	if (pieces.length > 1)
+		result.charset = pieces[1].replace('charset=', '').trim();
+	else
+		result.charset = 'ascii';
+	return result;
 }
 
 function processResponse(mimetype, data)
 {
 	var result = data;
-
 	var type = parseMimeType(mimetype);
-	switch(type)
+
+	switch(type.mimetype)
 	{
 		case 'text/plain':
 		case 'text/html':
-			result = data.toString('utf8');
+			result = data.toString(type.charset);
 			break;
 
 		case 'application/x-www-form-urlencoded':
-			result = querystring.parse(data.toString('utf8'))
+			result = querystring.parse(data.toString(type.charset))
 			break;
 
 		case 'application/json':
-			result = JSON.parse(data.toString('utf8'))
+			result = JSON.parse(data.toString(type.charset))
 			break;
 
 		case 'image/png':
@@ -248,7 +255,7 @@ chainableRequest.prototype.handleChunkedResponse = function(response)
 	var data = null;
 	
 	var complete = function()
-	{
+	{		
 		self.emit('reply', response, processResponse(response.headers['content-type'], data));
 	};
 
