@@ -11,21 +11,21 @@ function ChainableRequest(options)
 	events.EventEmitter.call(this);
 
 	var host = 'localhost';
-	if (options.hostname !== undefined)
+	if (options && options.hostname)
 		host = options.hostname;
-	else if (options.host !== undefined)
+	else if (options && options.host)
 		host = options.host;
 
 	this.parameters = {
 		'method': 'GET',
 		'headers': { },
 		'host': host,
-		'port': (options.port === undefined) ? 80 : options.port,
-		'path': (options.path === undefined) ? '/' : options.path
+		'port': (options && options.port) ? options.port : 80,
+		'path': (options && options.path) ? options.path : '/'
 	};
 
 	var protocol = 'http';
-	if (options.protocol)
+	if (options && options.protocol)
 		protocol = options.protocol;
 	protocol = protocol.replace(/:$/, '');
 	this.protocol = require(protocol);
@@ -93,9 +93,21 @@ ChainableRequest.prototype.basic_auth = function(user, password)
 	return this;
 };
 
+ChainableRequest.prototype.path = function(rpath)
+{
+	this.parameters.path = rpath;
+	return this;
+};
+
+ChainableRequest.prototype.method = function(method)
+{
+	this.parameters.method = method;
+	return this;
+};
+
 ChainableRequest.prototype.get = function(path)
 {
-	if (path !== undefined)
+	if (path)
 		this.parameters.path = path;
 	if (this.querystring)
 		this.parameters.path = this.parameters.path + '?' + this.querystring;
@@ -107,7 +119,7 @@ ChainableRequest.prototype.get = function(path)
 ChainableRequest.prototype.post = function(path)
 {
 	this.parameters.method = 'POST';
-	if (path !== undefined)
+	if (path)
 		this.parameters.path = path;
 
 	this.execute();
@@ -117,7 +129,7 @@ ChainableRequest.prototype.post = function(path)
 ChainableRequest.prototype.put = function(path)
 {
 	this.parameters.method = 'PUT';
-	if (path !== undefined)
+	if (path)
 		this.parameters.path = path;
 
 	this.execute();
@@ -127,14 +139,14 @@ ChainableRequest.prototype.put = function(path)
 ChainableRequest.prototype.delete = function(path)
 {
 	this.parameters.method = 'DELETE';
-	if (path !== undefined)
+	if (path)
 		this.parameters.path = path;
 
 	this.execute();
 	return this;
 };
 
-ChainableRequest.prototype.execute = function()
+ChainableRequest.prototype.execute = function(callback)
 {
 	var self = this;
 
@@ -145,12 +157,15 @@ ChainableRequest.prototype.execute = function()
 
 	var request = self.protocol.request(self.parameters, function(response)
 	{
-		self.handleResponse(response);
+		self.handleResponse(response, callback);
 	});
 
 	request.on('error', function(err)
 	{
-		self.emit('error', err);
+		if (callback && (typeof callback === 'function'))
+			callback(err);
+		else
+			self.emit('error', err);
 	});
 
 	if (this.payload !== undefined)
@@ -207,14 +222,17 @@ function processResponse(mimetype, data)
 	return result;
 }
 
-ChainableRequest.prototype.handleResponse = function(response)
+ChainableRequest.prototype.handleResponse = function(response, callback)
 {
 	var self = this;
 	var data = null;
 
 	var complete = function()
 	{
-		self.emit('reply', response, processResponse(response.headers['content-type'], data));
+		var processed = processResponse(response.headers['content-type'], data);
+		if (callback && (typeof callback === 'function'))
+			callback(null, response, processed);
+		self.emit('reply', response, processed);
 	};
 
 	response.on('data', function(chunk)
