@@ -27,7 +27,7 @@ function ChainableRequest(options)
 	};
 
 	var protocol = options.protocol || 'http';
-	this.prototcol(protocol);
+	this.protocol(protocol);
 
 	this.querystring = false;
 }
