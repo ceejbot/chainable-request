@@ -1,22 +1,24 @@
-(function() {
-'use strict';
-
-var events      = require('events'),
+var
+	events = require('events'),
+    http = require('http'),
+    https = require('https'),
     querystring = require('querystring'),
-    util        = require('util')
+    util = require('util')
     ;
 
 function ChainableRequest(options)
 {
 	events.EventEmitter.call(this);
+	options = options || {};
 
 	var host = 'localhost';
-	if (options && options.hostname)
+	if (options.hostname)
 		host = options.hostname;
-	else if (options && options.host)
+	else if (options.host)
 		host = options.host;
 
-	this.parameters = {
+	this.parameters =
+	{
 		'method': 'GET',
 		'headers': { },
 		'host': host,
@@ -24,11 +26,8 @@ function ChainableRequest(options)
 		'path': (options && options.path) ? options.path : '/'
 	};
 
-	var protocol = 'http';
-	if (options && options.protocol)
-		protocol = options.protocol;
-	protocol = protocol.replace(/:$/, '');
-	this.proto = require(protocol);
+	var protocol = options.protocol || 'http';
+	this.prototcol(protocol);
 
 	this.querystring = false;
 }
@@ -48,10 +47,23 @@ ChainableRequest.prototype.port = function(port)
 
 ChainableRequest.prototype.protocol = function(proto)
 {
-	// TODO restrict protocols to one of http, https
-	if (proto[proto.length - 1] === ':')
-		proto = proto.slice(0, -1);
-	this.proto = require(proto);
+	proto = proto.replace(/:$/, '');
+
+	switch (proto)
+	{
+	case 'https':
+		this.proto = https;
+		break;
+
+	case 'http':
+		this.proto = http;
+		break;
+
+	default:
+		this.proto = http;
+		break;
+	}
+
 	return this;
 };
 
@@ -261,5 +273,3 @@ function __extend(destination, source)
 }
 
 exports.ChainableRequest = ChainableRequest;
-
-}.call(this));
