@@ -1,12 +1,15 @@
 {
-  "name"            : "chainable-request",
-  "description"     : "Very simple wrapper for http requests with a chainable API.",
-  "main"            : "chainable-request",
-  "version"         : "0.1.0",
-  "keywords"        : ["http", "request", "wrapper" ],
-  "author"          : "C J Silverio <ceejceej@gmail.com>",
-  "repository"      : { "type": "git",
-                        "url" : "git://github.com/ceejbot/chainable-request.git" },
-  "bugs"            : "http://github.com/ceejbot/chainable-request/issues",
-  "devDependencies" : { "express": "2.5.x", "connect-auth": "0.4.1" }
+	"name"            : "chainable-request",
+	"description"     : "Very simple wrapper for http requests with a chainable API.",
+	"main"            : "chainable-request",
+	"version"         : "0.2.0",
+	"keywords"        : ["http", "request", "wrapper" ],
+	"author"          : "C J Silverio <ceejceej@gmail.com>",
+	"repository"      : { "type": "git", "url" : "git://github.com/ceejbot/chainable-request.git" },
+	"bugs"            : "http://github.com/ceejbot/chainable-request/issues",
+	"devDependencies" :
+	{
+		"mocha": "*",
+		"chai": "*"
+	}
 }

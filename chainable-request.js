@@ -1,5 +1,5 @@
 (function() {
-"use strict";
+'use strict';
 
 var events      = require('events'),
     querystring = require('querystring'),
@@ -28,7 +28,7 @@ function ChainableRequest(options)
 	if (options && options.protocol)
 		protocol = options.protocol;
 	protocol = protocol.replace(/:$/, '');
-	this.protocol = require(protocol);
+	this.proto = require(protocol);
 
 	this.querystring = false;
 }
@@ -51,7 +51,7 @@ ChainableRequest.prototype.protocol = function(proto)
 	// TODO restrict protocols to one of http, https
 	if (proto[proto.length - 1] === ':')
 		proto = proto.slice(0, -1);
-	this.protocol = require(proto);
+	this.proto = require(proto);
 	return this;
 };
 
@@ -155,7 +155,7 @@ ChainableRequest.prototype.execute = function(callback)
 	else
 		__extend(this.parameters.headers, {'Content-Length': Buffer.byteLength(self.payload)});
 
-	var request = self.protocol.request(self.parameters, function(response)
+	var request = self.proto.request(self.parameters, function(response)
 	{
 		self.handleResponse(response, callback);
 	});
