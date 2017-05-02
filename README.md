@@ -32,6 +32,8 @@ new requester({host: 'www.google.com' }).
 
 ## Creating a new request.
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ceejbot/chainable-request.svg)](https://greenkeeper.io/)
+
 `var requester = new chainableRequest(options);`
 
 Creates a new requester object modified by the requested options. The default request is to http://localhost:80/ using method GET.
